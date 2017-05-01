@@ -1,0 +1,91 @@
+{
+  "city": {
+    "id": 2643743,
+    "name": "London",
+    "coord": {
+      "lon": -0.12574,
+      "lat": 51.50853
+    },
+    "country": "GB",
+    "population": 0
+  },
+  "cod": "200",
+  "message": 0.3691,
+  "cnt": 3,
+  "list": [
+    {
+      "dt": 1481108400,
+      "temp": {
+        "day": 11.39,
+        "min": 8.57,
+        "max": 11.39,
+        "night": 8.98,
+        "eve": 8.57,
+        "morn": 9.3
+      },
+      "pressure": 1032.11,
+      "humidity": 92,
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "speed": 6.41,
+      "deg": 202,
+      "clouds": 64
+    },
+    {
+      "dt": 1491194800,
+      "temp": {
+        "day": 12.06,
+        "min": 9.74,
+        "max": 12.56,
+        "night": 12.28,
+        "eve": 12.32,
+        "morn": 9.74
+      },
+      "pressure": 1031.49,
+      "humidity": 96,
+      "weather": [
+        {
+          "id": 500,
+          "main": "Clear Sky",
+          "description": "clear sky",
+          "icon": "02d"
+        }
+      ],
+      "speed": 5.56,
+      "deg": 212,
+      "clouds": 92,
+      "rain": 1.27
+    },
+    {
+      "dt": 1581281200,
+      "temp": {
+        "day": 11.88,
+        "min": 10.28,
+        "max": 22.56,
+        "night": 12.56,
+        "eve": 11.58,
+        "morn": 11.02
+      },
+      "pressure": 1029.12,
+      "humidity": 95,
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10d"
+        }
+      ],
+      "speed": 6.28,
+      "deg": 209,
+      "clouds": 36,
+      "rain": 0.38
+    }
+  ]
+}

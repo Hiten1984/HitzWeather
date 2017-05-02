@@ -5,11 +5,12 @@ import java.util.List;
 import au.com.weather.json.WeatherJsonResponse;
 import au.com.weather.json.WeatherMainJsonResponse;
 
-public class WeatherSummaryData {
+public class WeatherSummaryData implements ResponseError{
     Long id;
     String name;
     WeatherMainJsonResponse main;
     List<WeatherJsonResponse> weather;
+    String message;
 
     public Long getId() {
         return id;
@@ -41,5 +42,18 @@ public class WeatherSummaryData {
 
     public void setWeather(List<WeatherJsonResponse> weather) {
         this.weather = weather;
+    }
+
+    @Override
+    public void onResponseError() {
+        getMessage();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -1,5 +1,6 @@
 package au.com.weather.mapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,19 +132,23 @@ public class WeatherSummaryResponseMapper {
      */
     public WeatherNextDaysSummaryData initNextDaysContent(Response<WeatherNextDaysSummaryJsonResponse> response) {
         WeatherNextDaysSummaryData nextDaysData = new WeatherNextDaysSummaryData();
-        nextDaysData.setCod(response.body().getCod());
-        nextDaysData.setCityDetails(mapCityDetailsResponse(response.body().getCityDetails()));
-        nextDaysData.setMainList(response.body().getTempList());
+        if(response.body() != null) {
+            nextDaysData.setCod(response.body().getCod());
+            nextDaysData.setCityDetails(mapCityDetailsResponse(response.body().getCityDetails()));
+            nextDaysData.setMainList(response.body().getTempList());
+        }
         return nextDaysData;
     }
 
     public WeatherSummaryData initWeatherContent(Response<WeatherSummaryJsonResponse> response) {
         WeatherSummaryData summaryData = new WeatherSummaryData();
-        if(response != null) {
+        if(response.body() != null) {
             summaryData.setId(response.body().getCityDetails().getId());
             summaryData.setName(response.body().getCityDetails().getName());
             summaryData.setMain(mapMainWeatherData(response.body().getMainList().get(0).getMain()));
             summaryData.setWeather(mapWeatherListData(response.body().getMainList().get(0).getWeather()));
+        } else {
+            summaryData.setMessage(response.errorBody().toString());
         }
         return summaryData;
     }

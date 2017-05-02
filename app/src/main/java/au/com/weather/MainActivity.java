@@ -2,6 +2,7 @@ package au.com.weather;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -56,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
     TextView currentDay;
     @Bind(R.id.weather_icon)
     ImageView weatherIcon;
-    @Bind(R.id.weather_icon_container)
-    LinearLayout weatherIconContainer;
     @Bind(R.id.temp_container)
     LinearLayout tempContainer;
     @Bind(R.id.max_temp)
@@ -66,8 +65,14 @@ public class MainActivity extends AppCompatActivity {
     TextView minTemperature;
     @Bind(R.id.current_temp)
     TextView currentTemperature;
+    @Bind(R.id.current_humidity)
+    TextView humidity;
+    @Bind(R.id.current_pressure)
+    TextView pressure;
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.horizontal_view)
+    View horizontalView;
 
     private WeatherSummaryData weatherSummaryData;
     WeatherNextDaysSummaryData weatherNextDaysSummaryData;
@@ -78,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     private WeatherDataStore dataStore;
     private Call<WeatherSummaryJsonResponse> dailyWeatherDataResponse;
     private Call<WeatherNextDaysSummaryJsonResponse> nextDaysWeatherDataResponse;
+    private String city;
+    private boolean isVisible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,11 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mapper = new WeatherSummaryResponseMapper();
         dataStore = WeatherApiClient.getClient().create(WeatherDataStore.class);
+        Intent intent = getIntent();
+        if(intent != null) {
+            city = intent.getStringExtra("city_name");
+            initApi(city);
+        }
     }
 
     /**
@@ -158,19 +170,22 @@ public class MainActivity extends AppCompatActivity {
      * @param weatherSummaryData dailyWeatherDataResponse coming from the webservice for the entered City Name
      **/
     private void setUpData(WeatherSummaryData weatherSummaryData) {
+        if (weatherSummaryData != null && weatherSummaryData.getMessage() != null) {
+            showUI(false);
+            isVisible = false;
+            Toast.makeText(this, "Not a valid address", Toast.LENGTH_LONG).show();
+        }
         if (weatherSummaryData != null) {
             weatherNextDaysSummaryData = mapper.initNextDaysContent(WeatherUtil.fromNextJson(getApplicationContext(), "london_3_days"));
-            hideKeyboardForView(container);
-            container.setVisibility(View.GONE);
-            cityName.setVisibility(View.VISIBLE);
-            currentDay.setVisibility(View.VISIBLE);
-            tempContainer.setVisibility(View.VISIBLE);
-            weatherIconContainer.setVisibility(View.VISIBLE);
+            if(isVisible)
+                showUI(true);
             cityName.setText(weatherSummaryData.getName());
             currentDay.setText(WeatherUtil.getCurrentDay());
             if (weatherSummaryData.getMain() != null) {
                 maxTemperature.setText(weatherSummaryData.getMain().getTempMax() + " \u2103");
                 minTemperature.setText(weatherSummaryData.getMain().getTempMin() + " \u2103");
+                humidity.setText(weatherSummaryData.getMain().getHumidity() + "%");
+                pressure.setText(weatherSummaryData.getMain().getPressure() + " hPa");
             }
             if (weatherSummaryData.getWeather() != null) {
                 currentTemperature.setText(weatherSummaryData.getWeather().get(0).getMain());
@@ -217,7 +232,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        nextDaysWeatherDataResponse = dataStore.getNextDaysWeatherByCityName(enterCityName.getText().toString().toLowerCase(),
+//        nextDaysWeatherDataResponse = dataStore.getNextDaysWeatherByCityName(enterCityName.getText().toString().toLowerCase(),
+        nextDaysWeatherDataResponse = dataStore.getNextDaysWeatherByCityName(cityName,
                 "10",
                 "json",
                 "metric",
@@ -227,7 +243,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<WeatherNextDaysSummaryJsonResponse> call, Response<WeatherNextDaysSummaryJsonResponse> response) {
                 weatherNextDaysSummaryData = mapper.initNextDaysContent(response);
-                setupAdapter(weatherNextDaysSummaryData);
+                if(weatherNextDaysSummaryData.getMainList() != null)
+                    setupAdapter(weatherNextDaysSummaryData);
             }
 
             @Override
@@ -257,6 +274,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Item Data Description - "+item.getWeatherJsonResponse().get(0).getMain() + ", min temp - " + item.getTempJsonResponse().getMin() , Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void showUI(boolean visible) {
+        cityName.setVisibility(visible ? View.VISIBLE : View.GONE);
+        currentDay.setVisibility(visible ? View.VISIBLE : View.GONE);
+        tempContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+        weatherIcon.setVisibility(visible ? View.VISIBLE : View.GONE);
+        horizontalView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 }
